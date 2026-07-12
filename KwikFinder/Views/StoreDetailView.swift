@@ -5,6 +5,7 @@ import SwiftUI
 struct StoreDetailView: View {
     @Environment(StoreRepository.self) private var repository
     @Environment(LocationService.self) private var locationService
+    @Environment(FavoritesStore.self) private var favorites
 
     let storeID: Int
 
@@ -19,6 +20,19 @@ struct StoreDetailView: View {
             }
             .navigationTitle(store.brandedName)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        favorites.toggle(storeID)
+                    } label: {
+                        Image(systemName: favorites.contains(storeID) ? "star.fill" : "star")
+                            .foregroundStyle(favorites.contains(storeID) ? .yellow : .primary)
+                    }
+                    .accessibilityLabel(
+                        favorites.contains(storeID) ? "Remove from favorites" : "Add to favorites"
+                    )
+                }
+            }
             .task(id: storeID) {
                 await repository.refreshDetails(ids: [storeID])
             }
@@ -51,6 +65,7 @@ struct StoreDetailView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .accessibilityHint("Opens driving directions in Maps")
 
                 if let phoneURL = telURL(store.phone) {
                     Link(destination: phoneURL) {
@@ -58,6 +73,7 @@ struct StoreDetailView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityLabel("Call \(store.phone)")
                 }
             }
             .buttonBorderShape(.capsule)
@@ -86,6 +102,11 @@ struct StoreDetailView: View {
                     .font(.subheadline)
                     .foregroundStyle(.green)
             }
+            if store.has(.bitcoinATM) {
+                Label("Bitcoin ATM", systemImage: StoreFeature.bitcoinATM.systemImage)
+                    .font(.subheadline)
+                    .foregroundStyle(.orange)
+            }
         }
     }
 
@@ -105,6 +126,10 @@ struct StoreDetailView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        priceAccessibilityLabel(name: fuel.displayName, price: fuel.formattedPrice)
+                    )
                 }
             }
         } header: {
@@ -112,10 +137,18 @@ struct StoreDetailView: View {
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
                 if let asOf = repository.pricesAsOf(store.id) {
-                    Text(
-                        "Prices \(repository.isLive(store.id) ? "updated" : "from snapshot") \(Format.asOf(asOf)). "
-                        + "The price posted at the pump always governs."
-                    )
+                    if repository.isLive(store.id) {
+                        Text(
+                            "Prices updated \(Format.asOf(asOf)). "
+                            + "The price posted at the pump always governs."
+                        )
+                    } else {
+                        Text(
+                            "Prices from offline snapshot (as of \(Format.asOf(asOf))). "
+                            + "Connect or pull to refresh for live prices. "
+                            + "The price posted at the pump always governs."
+                        )
+                    }
                 }
                 if case .offline(_, let message) = repository.liveStatus, !repository.isLive(store.id) {
                     Text(message)
@@ -141,14 +174,17 @@ struct StoreDetailView: View {
                         } else {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.green)
+                                .accessibilityHidden(true)
                         }
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
         }
     }
 
     private func amenitySection(_ store: Store) -> some View {
+        // Includes Bitcoin ATM when present (StoreFeature.amenity → Store.has(.bitcoinATM)).
         let present = StoreFeature.amenity.filter { store.has($0) }
         return Section("Amenities") {
             if present.isEmpty {
@@ -168,13 +204,17 @@ struct StoreDetailView: View {
             if store.open24Hours {
                 Label("Open 24 hours", systemImage: "clock.fill")
             } else if let hours = store.hours, !hours.isEmpty {
-                ForEach(Array(hours.enumerated()), id: \.offset) { _, day in
+                ForEach(hours) { day in
                     HStack {
                         Text(day.dayOfWeek.isEmpty ? "Hours" : day.dayOfWeek)
                         Spacer()
                         Text(day.display)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        "\(day.dayOfWeek.isEmpty ? "Hours" : day.dayOfWeek), \(day.display)"
+                    )
                 }
             } else {
                 Text("Hours unavailable — call ahead.")
@@ -197,5 +237,12 @@ struct StoreDetailView: View {
         let digits = phone.filter(\.isNumber)
         guard !digits.isEmpty else { return nil }
         return URL(string: "tel:\(digits)")
+    }
+
+    private func priceAccessibilityLabel(name: String, price: String?) -> String {
+        if let price {
+            return "\(name), \(price)"
+        }
+        return name
     }
 }

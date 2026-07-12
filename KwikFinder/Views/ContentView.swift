@@ -13,7 +13,9 @@ struct ContentView: View {
     @State private var repository = StoreRepository()
     @State private var locationService = LocationService()
     @State private var filters = FilterState()
+    @State private var favorites = FavoritesStore()
     @State private var searchText = ""
+    @State private var sortOrder: StoreSortOrder = .nearest
 
     @State private var camera: MapCameraPosition = .automatic
     @State private var visibleRegion: MKCoordinateRegion?
@@ -34,10 +36,21 @@ struct ContentView: View {
     private var filteredStores: [Store] {
         let reference = locationService.effectiveLocation
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return repository.stores
+        let matches = repository.stores
             .filter { filters.matches($0) }
             .filter { query.isEmpty || $0.matchesSearch(query) }
-            .sorted { $0.distance(from: reference) < $1.distance(from: reference) }
+
+        switch sortOrder {
+        case .nearest:
+            return matches.sorted { $0.distance(from: reference) < $1.distance(from: reference) }
+        case .favoritesFirst:
+            return matches.sorted { lhs, rhs in
+                let leftFav = favorites.contains(lhs.id)
+                let rightFav = favorites.contains(rhs.id)
+                if leftFav != rightFav { return leftFav && !rightFav }
+                return lhs.distance(from: reference) < rhs.distance(from: reference)
+            }
+        }
     }
 
     private var mapStores: [Store] {
@@ -46,6 +59,7 @@ struct ContentView: View {
         let center = visibleRegion.map {
             CLLocation(latitude: $0.center.latitude, longitude: $0.center.longitude)
         } ?? locationService.effectiveLocation
+        // Map always prefers geographic nearest for markers, regardless of list sort.
         return Array(
             stores
                 .sorted { $0.distance(from: center) < $1.distance(from: center) }
@@ -121,6 +135,7 @@ struct ContentView: View {
                 referenceLocation: locationService.effectiveLocation,
                 usingActualLocation: locationService.location != nil,
                 searchText: $searchText,
+                sortOrder: $sortOrder,
                 onRefresh: {
                     await repository.refreshWhileActive(
                         around: locationService.effectiveLocation,
@@ -140,6 +155,7 @@ struct ContentView: View {
         .environment(repository)
         .environment(locationService)
         .environment(filters)
+        .environment(favorites)
     }
 
     private func markerSymbol(for store: Store) -> String {

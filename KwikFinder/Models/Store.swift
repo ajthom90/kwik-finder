@@ -50,10 +50,14 @@ struct FuelOffering: Codable, Hashable, Identifiable {
     }
 }
 
-struct StoreHours: Codable, Hashable {
+struct StoreHours: Codable, Hashable, Identifiable {
     let openTime: String
     let closeTime: String
     let dayOfWeek: String
+
+    /// Day + open/close keeps ForEach identity stable if the API ever returns
+    /// duplicate day labels (same pattern as FuelOffering).
+    var id: String { "\(dayOfWeek)|\(openTime)|\(closeTime)" }
 
     /// "05:00:00" -> "5:00 AM"; midnight close ("00:00:00") reads as "Midnight".
     private static func friendly(_ time: String) -> String? {

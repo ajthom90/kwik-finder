@@ -11,6 +11,8 @@ Kwik Trip's own public website.
 
 - **Map + nearest-first list** of all 900+ Kwik Trip / Kwik Star stores,
   sorted by distance from your location (Apple Maps–style draggable sheet).
+- **Favorites**: star stores from the list or detail screen; favorites persist
+  across launches (UserDefaults). Sort the list **Nearest** or **Favorites first**.
 - **Filters** (a store must have *every* selected feature):
   - *Popular:* Family Restroom, EV Charging, Open 24 Hours
   - *Fuel types:* Diesel, Premium Diesel, DEF at the pump, E-85, CNG,
@@ -20,14 +22,15 @@ Kwik Trip's own public website.
   - *Amenities:* Car Wash, ATM, Bitcoin ATM, Wi-Fi, Restaurant
 - **Search** the list by store name, city, address, or store number.
 - **Store detail** screen with live fuel prices (including DEF), hours,
-  amenities, truck-parking stall counts, one-tap directions (Apple Maps) and
-  calling.
+  amenities (including Bitcoin ATM when present), truck-parking stall counts,
+  one-tap directions (Apple Maps) and calling.
 - **EV charging status**: sites from Kwik Trip's KwikCharge list are badged
   green when open and orange when "Coming Soon".
 - Works offline from a bundled data snapshot; refreshes live data when online,
   again when the app becomes active, and on pull-to-refresh (throttled so the
-  locator endpoints are not hammered). Status banners show snapshot / live /
-  offline state.
+  locator endpoints are not hammered). Status banners emphasize snapshot /
+  refreshing / offline; a brief “live updated” confirmation hides after a few
+  seconds when everything is healthy.
 
 ## Where the data comes from
 
@@ -85,15 +88,16 @@ KwikFinder/
 ├── Models/
 │   ├── Store.swift              Store model + feature matching
 │   ├── StoreFeature.swift       Filterable features (labels, icons, groups)
-│   └── FilterState.swift        Selected-filter state (AND semantics)
+│   ├── FilterState.swift        Selected-filter state (AND semantics)
+│   └── FavoritesStore.swift     Persisted favorite store IDs + list sort order
 ├── Services/
 │   ├── KwikTripAPI.swift        Client for the locator JSON endpoints
 │   ├── StoreRepository.swift    Snapshot + live-data merge, single source of truth
 │   └── LocationService.swift    CoreLocation wrapper
 ├── Views/
 │   ├── ContentView.swift        Map + persistent bottom sheet
-│   ├── StoreListView.swift      Nearest-first list with feature badges
-│   ├── StoreDetailView.swift    Fuel prices, services, hours, actions
+│   ├── StoreListView.swift      Sorted list, favorites, search, status banners
+│   ├── StoreDetailView.swift    Fuel prices, services, hours, favorite, actions
 │   ├── FilterView.swift         Filter picker with live match count
 │   └── Formatters.swift         Distance/date formatting helpers
 ├── Resources/
