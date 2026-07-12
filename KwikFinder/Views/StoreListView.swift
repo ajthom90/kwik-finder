@@ -3,13 +3,18 @@ import SwiftUI
 
 struct StoreListView: View {
     @Environment(FilterState.self) private var filters
+    @Environment(StoreRepository.self) private var repository
 
     let stores: [Store]
     let referenceLocation: CLLocation
     let usingActualLocation: Bool
+    @Binding var searchText: String
+    var onRefresh: (() async -> Void)?
 
     var body: some View {
         List {
+            liveStatusSection
+
             if !usingActualLocation {
                 Section {
                     Label(
@@ -23,9 +28,9 @@ struct StoreListView: View {
 
             if stores.isEmpty {
                 ContentUnavailableView(
-                    "No matching stores",
-                    systemImage: "line.3.horizontal.decrease.circle",
-                    description: Text("Try removing a filter — no store has every selected feature.")
+                    emptyTitle,
+                    systemImage: emptySystemImage,
+                    description: Text(emptyDescription)
                 )
             } else {
                 Section {
@@ -35,13 +40,19 @@ struct StoreListView: View {
                         }
                     }
                 } header: {
-                    Text("\(stores.count) \(filters.isActive ? "matching " : "")stores, nearest first")
+                    Text(listHeader)
                 }
             }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Kwik Trip Finder")
         .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $searchText, prompt: "Name, city, or store #")
+        .refreshable {
+            if let onRefresh {
+                await onRefresh()
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink(value: Route.filters) {
@@ -55,6 +66,75 @@ struct StoreListView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var liveStatusSection: some View {
+        switch repository.liveStatus {
+        case .snapshotOnly:
+            Section {
+                Label(
+                    "Using bundled store data. Connect to refresh live prices and new stores.",
+                    systemImage: "externaldrive"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+        case .refreshing:
+            Section {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Updating live store data…")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        case .live(let date):
+            Section {
+                Label(
+                    "Live data updated \(Format.asOf(date))",
+                    systemImage: "checkmark.circle"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+        case .offline(_, let message):
+            Section {
+                Label(message, systemImage: "wifi.exclamationmark")
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+            }
+        }
+    }
+
+    private var listHeader: String {
+        var parts: [String] = ["\(stores.count)"]
+        if filters.isActive || !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            parts.append("matching")
+        }
+        parts.append("stores, nearest first")
+        return parts.joined(separator: " ")
+    }
+
+    private var emptyTitle: String {
+        if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "No stores found"
+        }
+        return "No matching stores"
+    }
+
+    private var emptySystemImage: String {
+        if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "magnifyingglass"
+        }
+        return "line.3.horizontal.decrease.circle"
+    }
+
+    private var emptyDescription: String {
+        if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Try a different name, city, or store number."
+        }
+        return "Try removing a filter — no store has every selected feature."
     }
 }
 
@@ -102,6 +182,9 @@ struct FeatureBadge: View {
     private var tint: Color {
         if feature == .evCharging {
             return evStatus == .open ? .green : .orange
+        }
+        if feature == .bitcoinATM {
+            return .orange
         }
         return .accentColor
     }

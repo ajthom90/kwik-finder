@@ -8,9 +8,12 @@ enum Route: Hashable {
 }
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var repository = StoreRepository()
     @State private var locationService = LocationService()
     @State private var filters = FilterState()
+    @State private var searchText = ""
 
     @State private var camera: MapCameraPosition = .automatic
     @State private var visibleRegion: MKCoordinateRegion?
@@ -23,14 +26,17 @@ struct ContentView: View {
     private static let midDetent = PresentationDetent.fraction(0.45)
     private static let compactDetent = PresentationDetent.height(96)
 
-    /// Cap on simultaneously rendered markers to keep the map responsive;
-    /// the nearest stores always win, so the cap is invisible in practice.
+    /// Cap on simultaneously rendered markers to keep the map responsive when
+    /// the unfiltered set is huge. When filters/search shrink the set under
+    /// this cap, every matching store is shown.
     private static let markerLimit = 350
 
     private var filteredStores: [Store] {
         let reference = locationService.effectiveLocation
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         return repository.stores
             .filter { filters.matches($0) }
+            .filter { query.isEmpty || $0.matchesSearch(query) }
             .sorted { $0.distance(from: reference) < $1.distance(from: reference) }
     }
 
@@ -73,7 +79,13 @@ struct ContentView: View {
         }
         .task {
             locationService.requestPermission()
-            await repository.refreshStoreList()
+            await repository.refreshWhileActive(around: locationService.effectiveLocation, force: true)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task {
+                await repository.refreshWhileActive(around: locationService.effectiveLocation)
+            }
         }
         .onChange(of: mapSelection) { _, selected in
             guard let id = selected else { return }
@@ -97,7 +109,7 @@ struct ContentView: View {
                 )
             }
             Task {
-                await refreshNearestDetails(around: newLocation)
+                await repository.refreshWhileActive(around: newLocation, force: true)
             }
         }
     }
@@ -107,7 +119,14 @@ struct ContentView: View {
             StoreListView(
                 stores: filteredStores,
                 referenceLocation: locationService.effectiveLocation,
-                usingActualLocation: locationService.location != nil
+                usingActualLocation: locationService.location != nil,
+                searchText: $searchText,
+                onRefresh: {
+                    await repository.refreshWhileActive(
+                        around: locationService.effectiveLocation,
+                        force: true
+                    )
+                }
             )
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -121,15 +140,6 @@ struct ContentView: View {
         .environment(repository)
         .environment(locationService)
         .environment(filters)
-    }
-
-    /// Pulls live prices/details for the stores the user is most likely to open.
-    private func refreshNearestDetails(around location: CLLocation) async {
-        let nearest = repository.stores
-            .sorted { $0.distance(from: location) < $1.distance(from: location) }
-            .prefix(10)
-            .map(\.id)
-        await repository.refreshDetails(ids: nearest)
     }
 
     private func markerSymbol(for store: Store) -> String {

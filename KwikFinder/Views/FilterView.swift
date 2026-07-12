@@ -22,7 +22,7 @@ struct FilterView: View {
                 Text(
                     "Stores must have every selected feature. Family restroom and EV charging "
                     + "data come from Kwik Trip's published location lists; EV results include "
-                    + "sites marked “Coming Soon.”"
+                    + "sites marked “Coming Soon.” Bitcoin ATM is a separate amenity from cash ATMs."
                 )
             }
         }

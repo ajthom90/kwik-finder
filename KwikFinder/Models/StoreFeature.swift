@@ -29,6 +29,7 @@ enum StoreFeature: String, CaseIterable, Identifiable, Hashable {
     // Other amenities
     case carWash
     case atm
+    case bitcoinATM
     case wifi
     case restaurant
 
@@ -54,6 +55,7 @@ enum StoreFeature: String, CaseIterable, Identifiable, Hashable {
         case .truckFriendly: "Truck Friendly"
         case .carWash: "Car Wash"
         case .atm: "ATM"
+        case .bitcoinATM: "Bitcoin ATM"
         case .wifi: "Wi-Fi"
         case .restaurant: "Restaurant"
         }
@@ -79,6 +81,7 @@ enum StoreFeature: String, CaseIterable, Identifiable, Hashable {
         case .truckFriendly: "road.lanes"
         case .carWash: "car.fill"
         case .atm: "banknote.fill"
+        case .bitcoinATM: "bitcoinsign.circle.fill"
         case .wifi: "wifi"
         case .restaurant: "fork.knife"
         }
@@ -88,11 +91,11 @@ enum StoreFeature: String, CaseIterable, Identifiable, Hashable {
     static let headline: [StoreFeature] = [.familyRestroom, .evCharging, .open24Hours]
     static let fuel: [StoreFeature] = [.diesel, .premiumDiesel, .def, .e85, .cng, .noEthanolGas, .unleaded88]
     static let truck: [StoreFeature] = [.scale, .showers, .truckParking, .transFlo, .fleetCards, .truckFriendly]
-    static let amenity: [StoreFeature] = [.carWash, .atm, .wifi, .restaurant]
+    static let amenity: [StoreFeature] = [.carWash, .atm, .bitcoinATM, .wifi, .restaurant]
 
     /// Order used for the compact badge row on store list cells.
     static let badgeOrder: [StoreFeature] = [
         .familyRestroom, .evCharging, .diesel, .def, .e85, .cng,
-        .scale, .showers, .truckParking, .carWash, .open24Hours,
+        .scale, .showers, .truckParking, .carWash, .bitcoinATM, .open24Hours,
     ]
 }

@@ -159,7 +159,10 @@ struct Store: Codable, Identifiable, Hashable {
         case .carWash:
             amenities.contains("CAR-WASH")
         case .atm:
+            // Exact amenity name only — "BITCOIN ATM" is a separate feature.
             amenities.contains("ATM")
+        case .bitcoinATM:
+            amenities.contains("BITCOIN ATM")
         case .wifi:
             amenities.contains("WI-FI")
         case .restaurant:
@@ -170,5 +173,15 @@ struct Store: Codable, Identifiable, Hashable {
     /// Features worth surfacing as badges on list rows, in display order.
     var badgeFeatures: [StoreFeature] {
         StoreFeature.badgeOrder.filter { has($0) }
+    }
+
+    /// Loose text match for the list search field (name, city, address, store #).
+    func matchesSearch(_ query: String) -> Bool {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return true }
+        if let number = Int(q), number == id { return true }
+        let haystack = [name, brandedName, city, address1, state, zip, "#\(id)", "\(id)"]
+            .joined(separator: " ")
+        return haystack.localizedCaseInsensitiveContains(q)
     }
 }

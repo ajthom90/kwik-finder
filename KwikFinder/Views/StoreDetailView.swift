@@ -110,11 +110,16 @@ struct StoreDetailView: View {
         } header: {
             Text("Fuel")
         } footer: {
-            if let asOf = repository.pricesAsOf(store.id) {
-                Text(
-                    "Prices \(repository.isLive(store.id) ? "updated" : "from snapshot") \(Format.asOf(asOf)). "
-                    + "The price posted at the pump always governs."
-                )
+            VStack(alignment: .leading, spacing: 4) {
+                if let asOf = repository.pricesAsOf(store.id) {
+                    Text(
+                        "Prices \(repository.isLive(store.id) ? "updated" : "from snapshot") \(Format.asOf(asOf)). "
+                        + "The price posted at the pump always governs."
+                    )
+                }
+                if case .offline(_, let message) = repository.liveStatus, !repository.isLive(store.id) {
+                    Text(message)
+                }
             }
         }
     }
@@ -163,9 +168,9 @@ struct StoreDetailView: View {
             if store.open24Hours {
                 Label("Open 24 hours", systemImage: "clock.fill")
             } else if let hours = store.hours, !hours.isEmpty {
-                ForEach(hours, id: \.dayOfWeek) { day in
+                ForEach(Array(hours.enumerated()), id: \.offset) { _, day in
                     HStack {
-                        Text(day.dayOfWeek)
+                        Text(day.dayOfWeek.isEmpty ? "Hours" : day.dayOfWeek)
                         Spacer()
                         Text(day.display)
                             .foregroundStyle(.secondary)
