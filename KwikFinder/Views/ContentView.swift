@@ -1,0 +1,147 @@
+import CoreLocation
+import MapKit
+import SwiftUI
+
+enum Route: Hashable {
+    case store(Int)
+    case filters
+}
+
+struct ContentView: View {
+    @State private var repository = StoreRepository()
+    @State private var locationService = LocationService()
+    @State private var filters = FilterState()
+
+    @State private var camera: MapCameraPosition = .automatic
+    @State private var visibleRegion: MKCoordinateRegion?
+    @State private var mapSelection: Int?
+    @State private var navPath: [Route] = []
+    @State private var sheetPresented = true
+    @State private var sheetDetent: PresentationDetent = Self.midDetent
+    @State private var hasCenteredOnUser = false
+
+    private static let midDetent = PresentationDetent.fraction(0.45)
+    private static let compactDetent = PresentationDetent.height(96)
+
+    /// Cap on simultaneously rendered markers to keep the map responsive;
+    /// the nearest stores always win, so the cap is invisible in practice.
+    private static let markerLimit = 350
+
+    private var filteredStores: [Store] {
+        let reference = locationService.effectiveLocation
+        return repository.stores
+            .filter { filters.matches($0) }
+            .sorted { $0.distance(from: reference) < $1.distance(from: reference) }
+    }
+
+    private var mapStores: [Store] {
+        let stores = filteredStores
+        guard stores.count > Self.markerLimit else { return stores }
+        let center = visibleRegion.map {
+            CLLocation(latitude: $0.center.latitude, longitude: $0.center.longitude)
+        } ?? locationService.effectiveLocation
+        return Array(
+            stores
+                .sorted { $0.distance(from: center) < $1.distance(from: center) }
+                .prefix(Self.markerLimit)
+        )
+    }
+
+    var body: some View {
+        Map(position: $camera, selection: $mapSelection) {
+            UserAnnotation()
+            ForEach(mapStores) { store in
+                Marker(store.brandedName, systemImage: markerSymbol(for: store), coordinate: store.coordinate)
+                    .tint(markerTint(for: store))
+                    .tag(store.id)
+            }
+        }
+        .mapStyle(.standard(pointsOfInterest: .excludingAll))
+        .mapControls {
+            MapUserLocationButton()
+            MapCompass()
+        }
+        .onMapCameraChange(frequency: .onEnd) { context in
+            visibleRegion = context.region
+        }
+        .sheet(isPresented: $sheetPresented) {
+            sheetContent
+                .presentationDetents([Self.compactDetent, Self.midDetent, .large], selection: $sheetDetent)
+                .presentationBackgroundInteraction(.enabled(upThrough: Self.midDetent))
+                .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled()
+        }
+        .task {
+            locationService.requestPermission()
+            await repository.refreshStoreList()
+        }
+        .onChange(of: mapSelection) { _, selected in
+            guard let id = selected else { return }
+            navPath = [.store(id)]
+            if sheetDetent == Self.compactDetent {
+                sheetDetent = Self.midDetent
+            }
+            // Clear so tapping the same marker again re-opens its detail.
+            mapSelection = nil
+        }
+        .onChange(of: locationService.location) { _, newLocation in
+            guard let newLocation, !hasCenteredOnUser else { return }
+            hasCenteredOnUser = true
+            withAnimation {
+                camera = .region(
+                    MKCoordinateRegion(
+                        center: newLocation.coordinate,
+                        latitudinalMeters: 40_000,
+                        longitudinalMeters: 40_000
+                    )
+                )
+            }
+            Task {
+                await refreshNearestDetails(around: newLocation)
+            }
+        }
+    }
+
+    private var sheetContent: some View {
+        NavigationStack(path: $navPath) {
+            StoreListView(
+                stores: filteredStores,
+                referenceLocation: locationService.effectiveLocation,
+                usingActualLocation: locationService.location != nil
+            )
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .store(let id):
+                    StoreDetailView(storeID: id)
+                case .filters:
+                    FilterView()
+                }
+            }
+        }
+        .environment(repository)
+        .environment(locationService)
+        .environment(filters)
+    }
+
+    /// Pulls live prices/details for the stores the user is most likely to open.
+    private func refreshNearestDetails(around location: CLLocation) async {
+        let nearest = repository.stores
+            .sorted { $0.distance(from: location) < $1.distance(from: location) }
+            .prefix(10)
+            .map(\.id)
+        await repository.refreshDetails(ids: nearest)
+    }
+
+    private func markerSymbol(for store: Store) -> String {
+        if store.evCharging != nil { return "bolt.car.fill" }
+        return "fuelpump.fill"
+    }
+
+    private func markerTint(for store: Store) -> Color {
+        switch store.evCharging {
+        case .open: .green
+        case .comingSoon: .orange
+        case nil: Color(red: 0.78, green: 0.06, blue: 0.18) // Kwik Trip red
+        }
+    }
+}
