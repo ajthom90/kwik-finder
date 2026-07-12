@@ -20,7 +20,9 @@ struct FuelOffering: Codable, Hashable, Identifiable {
     let description: String?
     let price: Double?
 
-    var id: String { type }
+    /// Some stores list the same fuel type twice (e.g. two "DIESEL #2"
+    /// entries with different descriptions), so type alone can't be the id.
+    var id: String { "\(type)|\(description ?? "")" }
 
     private static let displayNames: [String: String] = [
         "UNLEADED 87 (10% ETH)": "Unleaded 87",
@@ -54,9 +56,9 @@ struct StoreHours: Codable, Hashable {
     let dayOfWeek: String
 
     /// "05:00:00" -> "5:00 AM"; midnight close ("00:00:00") reads as "Midnight".
-    private static func friendly(_ time: String) -> String {
+    private static func friendly(_ time: String) -> String? {
         let parts = time.split(separator: ":").compactMap { Int($0) }
-        guard parts.count >= 2 else { return time }
+        guard parts.count >= 2 else { return nil }
         let (hour, minute) = (parts[0], parts[1])
         if hour == 0 && minute == 0 { return "Midnight" }
         let suffix = hour < 12 ? "AM" : "PM"
@@ -65,7 +67,10 @@ struct StoreHours: Codable, Hashable {
     }
 
     var display: String {
-        "\(Self.friendly(openTime)) – \(Self.friendly(closeTime))"
+        guard let open = Self.friendly(openTime), let close = Self.friendly(closeTime) else {
+            return "Hours unavailable"
+        }
+        return "\(open) – \(close)"
     }
 }
 
