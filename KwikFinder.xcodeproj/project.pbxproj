@@ -6,133 +6,213 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0190F7BBEB56E4AB5B32C5F0 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECFAF5CA018BA05D97EEB0B /* FilterView.swift */; };
+		127B458867E5C3269C84A373 /* stores_snapshot.json in Resources */ = {isa = PBXBuildFile; fileRef = FC378330C587E64BEAD76FA5 /* stores_snapshot.json */; };
+		31A60137ADEE2909921773E7 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84954E19585A94543B780A01 /* Store.swift */; };
+		3930FF4987ED3AA1E7BDC46F /* FilterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715D863D90D739E2CCB98C6D /* FilterState.swift */; };
+		3E82DCB06C51A3A27C8143AF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BEFAB9D0DD5E4EE531FC6D /* ContentView.swift */; };
+		3FABD6ED7FD5D866124DD122 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B90A1AEB4274235ABF373993 /* Assets.xcassets */; };
+		4B9A8B2417D47334F2AA3ECC /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD76445A81C6C4C91887319 /* FavoritesStore.swift */; };
+		5C7D378A89A82AFABEDE0517 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB7995F491AC70B53BAC46F /* LocationService.swift */; };
+		66118D3FDFE7BC1974F182D2 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194B32EC3DD3BED3F2FA2A62 /* Formatters.swift */; };
+		7A89514D922AFE821B72E65F /* KwikFinderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */; };
+		8C200999ECA9CCE2A3245F38 /* StoreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBE8F49DEE3F80CC85525 /* StoreDetailView.swift */; };
+		9B7B031F6D2F403C1B97CD2A /* StoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0CF7F50B40370FB1818C76 /* StoreFeature.swift */; };
+		CC19F71D6C1153C58B3BA4ED /* StoreListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A200E59E1DAD693A897B5E0 /* StoreListView.swift */; };
+		CD3E683E9085C2727ED38822 /* KwikTripAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16DEB5759B22BF2C0F72D72B /* KwikTripAPI.swift */; };
+		F9F267265AFE34FC8F0DB19B /* StoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		D0DA7A0000000000000000A1 /* KwikFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KwikFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F0CF7F50B40370FB1818C76 /* StoreFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreFeature.swift; sourceTree = "<group>"; };
+		16DEB5759B22BF2C0F72D72B /* KwikTripAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KwikTripAPI.swift; sourceTree = "<group>"; };
+		194B32EC3DD3BED3F2FA2A62 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		1A200E59E1DAD693A897B5E0 /* StoreListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreListView.swift; sourceTree = "<group>"; };
+		218FBE8F49DEE3F80CC85525 /* StoreDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreDetailView.swift; sourceTree = "<group>"; };
+		3ECFAF5CA018BA05D97EEB0B /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
+		3FB7995F491AC70B53BAC46F /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		68BEFAB9D0DD5E4EE531FC6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6CD76445A81C6C4C91887319 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
+		715D863D90D739E2CCB98C6D /* FilterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterState.swift; sourceTree = "<group>"; };
+		84954E19585A94543B780A01 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		B75956CEAF585D64097B2041 /* KwikFinder.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KwikFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B90A1AEB4274235ABF373993 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRepository.swift; sourceTree = "<group>"; };
+		F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KwikFinderApp.swift; sourceTree = "<group>"; };
+		FC378330C587E64BEAD76FA5 /* stores_snapshot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stores_snapshot.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		D0DA7A0000000000000000A2 /* KwikFinder */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KwikFinder;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		D0DA7A0000000000000000A3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
-		D0DA7A0000000000000000A4 = {
+		9B859A00CB5965FEBF751C3B /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				D0DA7A0000000000000000A2 /* KwikFinder */,
-				D0DA7A0000000000000000A5 /* Products */,
+				16DEB5759B22BF2C0F72D72B /* KwikTripAPI.swift */,
+				3FB7995F491AC70B53BAC46F /* LocationService.swift */,
+				CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */,
 			);
+			path = Services;
 			sourceTree = "<group>";
 		};
-		D0DA7A0000000000000000A5 /* Products */ = {
+		A1E9BFE5B3B1E1EB1AC9B690 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				D0DA7A0000000000000000A1 /* KwikFinder.app */,
+				68BEFAB9D0DD5E4EE531FC6D /* ContentView.swift */,
+				3ECFAF5CA018BA05D97EEB0B /* FilterView.swift */,
+				194B32EC3DD3BED3F2FA2A62 /* Formatters.swift */,
+				218FBE8F49DEE3F80CC85525 /* StoreDetailView.swift */,
+				1A200E59E1DAD693A897B5E0 /* StoreListView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A555D65C3BE0E6F996BB7E9E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B75956CEAF585D64097B2041 /* KwikFinder.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A757BAA10D3AC285C2FF6FFA = {
+			isa = PBXGroup;
+			children = (
+				D909651AFD841DB27685FD2A /* KwikFinder */,
+				A555D65C3BE0E6F996BB7E9E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C7410F3AA6E2D128DFDC63A6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6CD76445A81C6C4C91887319 /* FavoritesStore.swift */,
+				715D863D90D739E2CCB98C6D /* FilterState.swift */,
+				84954E19585A94543B780A01 /* Store.swift */,
+				0F0CF7F50B40370FB1818C76 /* StoreFeature.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D6B7E5F9E4DF5F1F168B0732 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FC378330C587E64BEAD76FA5 /* stores_snapshot.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D909651AFD841DB27685FD2A /* KwikFinder */ = {
+			isa = PBXGroup;
+			children = (
+				C7410F3AA6E2D128DFDC63A6 /* Models */,
+				D6B7E5F9E4DF5F1F168B0732 /* Resources */,
+				9B859A00CB5965FEBF751C3B /* Services */,
+				A1E9BFE5B3B1E1EB1AC9B690 /* Views */,
+				B90A1AEB4274235ABF373993 /* Assets.xcassets */,
+				F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */,
+			);
+			path = KwikFinder;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D0DA7A0000000000000000A6 /* KwikFinder */ = {
+		31907EB70423D0697D22571D /* KwikFinder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D0DA7A0000000000000000A7 /* Build configuration list for PBXNativeTarget "KwikFinder" */;
+			buildConfigurationList = 0B150138A6EEFBB799293A48 /* Build configuration list for PBXNativeTarget "KwikFinder" */;
 			buildPhases = (
-				D0DA7A0000000000000000A8 /* Sources */,
-				D0DA7A0000000000000000A3 /* Frameworks */,
-				D0DA7A0000000000000000A9 /* Resources */,
+				10937F103613F80A540B4DFC /* Sources */,
+				523E9B6522890D9EECDA4B22 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				D0DA7A0000000000000000A2 /* KwikFinder */,
-			);
 			name = KwikFinder;
 			packageProductDependencies = (
 			);
 			productName = KwikFinder;
-			productReference = D0DA7A0000000000000000A1 /* KwikFinder.app */;
+			productReference = B75956CEAF585D64097B2041 /* KwikFinder.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		D0DA7A0000000000000000AA /* Project object */ = {
+		1EF6934044E78FF53EAF1642 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
+				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					D0DA7A0000000000000000A6 = {
-						CreatedOnToolsVersion = 16.0;
+					31907EB70423D0697D22571D = {
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = D0DA7A0000000000000000AB /* Build configuration list for PBXProject "KwikFinder" */;
+			buildConfigurationList = 93E0DCC9D717903DA73A7CB1 /* Build configuration list for PBXProject "KwikFinder" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				en,
 			);
-			mainGroup = D0DA7A0000000000000000A4;
+			mainGroup = A757BAA10D3AC285C2FF6FFA;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = D0DA7A0000000000000000A5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D0DA7A0000000000000000A6 /* KwikFinder */,
+				31907EB70423D0697D22571D /* KwikFinder */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D0DA7A0000000000000000A9 /* Resources */ = {
+		523E9B6522890D9EECDA4B22 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FABD6ED7FD5D866124DD122 /* Assets.xcassets in Resources */,
+				127B458867E5C3269C84A373 /* stores_snapshot.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D0DA7A0000000000000000A8 /* Sources */ = {
+		10937F103613F80A540B4DFC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E82DCB06C51A3A27C8143AF /* ContentView.swift in Sources */,
+				4B9A8B2417D47334F2AA3ECC /* FavoritesStore.swift in Sources */,
+				3930FF4987ED3AA1E7BDC46F /* FilterState.swift in Sources */,
+				0190F7BBEB56E4AB5B32C5F0 /* FilterView.swift in Sources */,
+				66118D3FDFE7BC1974F182D2 /* Formatters.swift in Sources */,
+				7A89514D922AFE821B72E65F /* KwikFinderApp.swift in Sources */,
+				CD3E683E9085C2727ED38822 /* KwikTripAPI.swift in Sources */,
+				5C7D378A89A82AFABEDE0517 /* LocationService.swift in Sources */,
+				31A60137ADEE2909921773E7 /* Store.swift in Sources */,
+				8C200999ECA9CCE2A3245F38 /* StoreDetailView.swift in Sources */,
+				9B7B031F6D2F403C1B97CD2A /* StoreFeature.swift in Sources */,
+				CC19F71D6C1153C58B3BA4ED /* StoreListView.swift in Sources */,
+				F9F267265AFE34FC8F0DB19B /* StoreRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		D0DA7A0000000000000000AC /* Debug */ = {
+		0ED97F13C690C56B3B8D4F3E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -163,7 +243,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -178,24 +258,57 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
-		D0DA7A0000000000000000AD /* Release */ = {
+		17B97128508F29B5895E5001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to find and sort the nearest Kwik Trip stores.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ajthom90.KwikFinder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		44B51ACA5F6463B704AA4ACB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -226,7 +339,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -235,20 +348,24 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		D0DA7A0000000000000000AE /* Debug */ = {
+		77410D817A97B2A5D1DF1B70 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -266,62 +383,35 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ajthom90.KwikFinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
-		D0DA7A0000000000000000AF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to find and sort the nearest Kwik Trip stores.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ajthom90.KwikFinder;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D0DA7A0000000000000000A7 /* Build configuration list for PBXNativeTarget "KwikFinder" */ = {
+		0B150138A6EEFBB799293A48 /* Build configuration list for PBXNativeTarget "KwikFinder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D0DA7A0000000000000000AE /* Debug */,
-				D0DA7A0000000000000000AF /* Release */,
+				77410D817A97B2A5D1DF1B70 /* Debug */,
+				17B97128508F29B5895E5001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		D0DA7A0000000000000000AB /* Build configuration list for PBXProject "KwikFinder" */ = {
+		93E0DCC9D717903DA73A7CB1 /* Build configuration list for PBXProject "KwikFinder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D0DA7A0000000000000000AC /* Debug */,
-				D0DA7A0000000000000000AD /* Release */,
+				0ED97F13C690C56B3B8D4F3E /* Debug */,
+				44B51ACA5F6463B704AA4ACB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = D0DA7A0000000000000000AA /* Project object */;
+	rootObject = 1EF6934044E78FF53EAF1642 /* Project object */;
 }

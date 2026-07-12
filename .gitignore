@@ -9,6 +9,12 @@ build/
 *.dSYM.zip
 *.dSYM
 
+# XcodeGen
+# project.yml is the source of truth; regenerate with `xcodegen generate`.
+# The generated KwikFinder.xcodeproj is committed so the repo opens cleanly.
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
 # Swift Package Manager
 .build/
 .swiftpm/

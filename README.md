@@ -71,14 +71,46 @@ current PDF URLs from the Maps & Downloads page automatically.
 
 ## Building
 
-1. Open `KwikFinder.xcodeproj` in **Xcode 16 or newer** (the project uses
-   filesystem-synchronized groups).
+The Xcode project is generated from [`project.yml`](project.yml) with
+[XcodeGen](https://github.com/yonaskolb/XcodeGen). `project.yml` is the source
+of truth; the committed `KwikFinder.xcodeproj` is produced from it so the repo
+opens cleanly without an extra step.
+
+### Prerequisites
+
+- **Xcode 16 or newer**
+- **XcodeGen** (only needed if you change `project.yml` or regenerate the project):
+
+```bash
+brew install xcodegen
+```
+
+### Generate & open
+
+```bash
+xcodegen generate          # writes/updates KwikFinder.xcodeproj from project.yml
+open KwikFinder.xcodeproj  # or open in Xcode from the Finder
+```
+
+### Build & run
+
+1. Open `KwikFinder.xcodeproj` in Xcode (or run `xcodegen generate` first if
+   you edited `project.yml`).
 2. Select your team under *Signing & Capabilities* if you're running on a
    device.
-3. Build and run on iOS 17.0+ (iPhone).
+3. Build and run on iOS 17.0+ (iPhone only).
+
+Command-line build (Simulator example):
+
+```bash
+xcodebuild -project KwikFinder.xcodeproj -scheme KwikFinder \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -configuration Debug build CODE_SIGNING_ALLOWED=NO
+```
 
 No third-party dependencies — SwiftUI, MapKit, CoreLocation, and the Swift
-Observation framework only.
+Observation framework only. Do not hand-edit `project.pbxproj`; change
+`project.yml` and re-run `xcodegen generate` instead.
 
 ## Architecture
 
