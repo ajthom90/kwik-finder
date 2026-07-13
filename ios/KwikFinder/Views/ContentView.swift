@@ -106,12 +106,12 @@ struct ContentView: View {
         }
         .task {
             locationService.requestPermission()
-            await repository.refreshWhileActive(around: locationService.effectiveLocation, force: true)
+            await repository.refresh(force: true)
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             Task {
-                await repository.refreshWhileActive(around: locationService.effectiveLocation)
+                await repository.refresh(force: false)
             }
         }
         .onChange(of: mapSelection) { _, selected in
@@ -135,9 +135,7 @@ struct ContentView: View {
                     )
                 )
             }
-            Task {
-                await repository.refreshWhileActive(around: newLocation, force: true)
-            }
+            // Location is only for map/list sort — catalog is a full dump, no per-location fetch.
         }
     }
 
@@ -150,10 +148,7 @@ struct ContentView: View {
                 searchText: $searchText,
                 sortOrder: $sortOrder,
                 onRefresh: {
-                    await repository.refreshWhileActive(
-                        around: locationService.effectiveLocation,
-                        force: true
-                    )
+                    await repository.refresh(force: true)
                 }
             )
             .navigationDestination(for: Route.self) { route in

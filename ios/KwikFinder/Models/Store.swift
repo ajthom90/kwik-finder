@@ -78,8 +78,10 @@ struct StoreHours: Codable, Hashable, Identifiable {
     }
 }
 
-/// One Kwik Trip / Kwik Star store, decoded from the bundled snapshot and/or
-/// the KwikFinder catalog server (`GET /v1/stores`).
+/// One Kwik Trip / Kwik Star store from the KwikFinder catalog (`GET /v1/stores`).
+/// OpenAPI allows null for address/phone (and possibly coordinates); decode
+/// defaults missing/null strings to `""` and coordinates to `0` so a full
+/// catalog never fails on sparse rows.
 struct Store: Codable, Identifiable, Hashable {
     let id: Int
     var name: String
@@ -98,9 +100,37 @@ struct Store: Codable, Identifiable, Hashable {
     var truckParkingSpaces: Int
     var familyRestroom: Bool
     var evCharging: EVChargingStatus?
-    /// Server-computed filter flags. Nil on bundled snapshot / legacy rows;
-    /// present on catalog API payloads.
+    /// Server-computed filter flags. Optional so partial/legacy payloads decode.
     var features: StoreFeatureFlags?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, latitude, longitude
+        case address1, city, county, state, zip, phone
+        case open24Hours, hours, fuels, amenities
+        case truckParkingSpaces, familyRestroom, evCharging, features
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(Int.self, forKey: .id)
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
+        latitude = try c.decodeIfPresent(Double.self, forKey: .latitude) ?? 0
+        longitude = try c.decodeIfPresent(Double.self, forKey: .longitude) ?? 0
+        address1 = try c.decodeIfPresent(String.self, forKey: .address1) ?? ""
+        city = try c.decodeIfPresent(String.self, forKey: .city) ?? ""
+        county = try c.decodeIfPresent(String.self, forKey: .county)
+        state = try c.decodeIfPresent(String.self, forKey: .state) ?? ""
+        zip = try c.decodeIfPresent(String.self, forKey: .zip) ?? ""
+        phone = try c.decodeIfPresent(String.self, forKey: .phone) ?? ""
+        open24Hours = try c.decodeIfPresent(Bool.self, forKey: .open24Hours) ?? false
+        hours = try c.decodeIfPresent([StoreHours].self, forKey: .hours)
+        fuels = try c.decodeIfPresent([FuelOffering].self, forKey: .fuels) ?? []
+        amenities = try c.decodeIfPresent([String].self, forKey: .amenities) ?? []
+        truckParkingSpaces = try c.decodeIfPresent(Int.self, forKey: .truckParkingSpaces) ?? 0
+        familyRestroom = try c.decodeIfPresent(Bool.self, forKey: .familyRestroom) ?? false
+        evCharging = try c.decodeIfPresent(EVChargingStatus.self, forKey: .evCharging)
+        features = try c.decodeIfPresent(StoreFeatureFlags.self, forKey: .features)
+    }
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -130,8 +160,8 @@ struct Store: Codable, Identifiable, Hashable {
     }
 
     /// Prefer server `features` flags when present; otherwise map fuels/amenities
-    /// (bundled snapshot and pre-server live merges). Headlines always use
-    /// top-level store fields (`familyRestroom`, `evCharging`, `open24Hours`).
+    /// (legacy rows without `features`). Headlines always use top-level store
+    /// fields (`familyRestroom`, `evCharging`, `open24Hours`).
     func has(_ feature: StoreFeature) -> Bool {
         switch feature {
         case .familyRestroom:

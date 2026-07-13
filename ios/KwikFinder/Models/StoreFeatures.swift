@@ -4,8 +4,7 @@ import Foundation
 /// Mirrors `StoreFeatures` in `docs/api/openapi.yaml`. Clients filter on these
 /// instead of re-mapping Kwik Trip amenity/fuel strings.
 ///
-/// All fields are optional so partial payloads and the bundled snapshot
-/// (which has no `features` key) still decode cleanly.
+/// All fields are optional so partial payloads still decode cleanly.
 struct StoreFeatureFlags: Codable, Hashable {
     var diesel: Bool?
     var premiumDiesel: Bool?

@@ -116,34 +116,43 @@ struct StoreListView: View {
         switch repository.liveStatus {
         case .snapshotOnly:
             Section {
-                Label(
-                    "Using bundled store data. Connect to refresh live prices and new stores.",
-                    systemImage: "externaldrive"
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                if repository.stores.isEmpty {
+                    Label(
+                        "No store data yet. Connect once to download the catalog from the KwikFinder server.",
+                        systemImage: "externaldrive"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                } else {
+                    Label(
+                        "Using cached store data. Pull to refresh when online.",
+                        systemImage: "externaldrive"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
             }
         case .refreshing:
             Section {
                 HStack(spacing: 10) {
                     ProgressView()
-                    Text("Updating live store data…")
+                    Text("Updating store catalog…")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Updating live store data")
+                .accessibilityLabel("Updating store catalog")
             }
         case .live(let date):
             if showLiveSuccessBanner {
                 Section {
                     Label(
-                        "Live data updated \(Format.asOf(date))",
+                        "Catalog updated \(Format.asOf(date))",
                         systemImage: "checkmark.circle"
                     )
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .accessibilityLabel("Live data updated \(Format.asOf(date))")
+                    .accessibilityLabel("Catalog updated \(Format.asOf(date))")
                 }
             }
         case .offline(let lastSuccess, let message):
@@ -153,7 +162,7 @@ struct StoreListView: View {
                         .font(.footnote)
                         .foregroundStyle(.orange)
                     if let lastSuccess {
-                        Text("Last live update \(Format.asOf(lastSuccess)).")
+                        Text("Last catalog update \(Format.asOf(lastSuccess)).")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -233,7 +242,7 @@ struct StoreListView: View {
         if filters.isActive {
             return "Try removing a filter — no store has every selected feature."
         }
-        return "Store data hasn’t loaded yet. Pull to refresh when you’re online."
+        return "Store catalog hasn’t loaded yet. Pull to refresh when the KwikFinder server is reachable."
     }
 }
 

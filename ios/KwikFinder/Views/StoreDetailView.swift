@@ -33,9 +33,7 @@ struct StoreDetailView: View {
                     )
                 }
             }
-            .task(id: storeID) {
-                await repository.refreshDetails(ids: [storeID])
-            }
+            // Prices/hours come from the full catalog cache; no per-store network fetch.
         } else {
             ContentUnavailableView("Store not found", systemImage: "questionmark.circle")
         }
@@ -139,13 +137,13 @@ struct StoreDetailView: View {
                 if let asOf = repository.pricesAsOf(store.id) {
                     if repository.isLive(store.id) {
                         Text(
-                            "Prices updated \(Format.asOf(asOf)). "
+                            "Prices from catalog \(Format.asOf(asOf)). "
                             + "The price posted at the pump always governs."
                         )
                     } else {
                         Text(
-                            "Prices from offline snapshot (as of \(Format.asOf(asOf))). "
-                            + "Connect or pull to refresh for live prices. "
+                            "Prices from cached catalog (as of \(Format.asOf(asOf))). "
+                            + "Connect or pull to refresh. "
                             + "The price posted at the pump always governs."
                         )
                     }
