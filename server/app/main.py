@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import health, stores
 from app.config import get_settings
 from app.repository import init_db
 
@@ -31,6 +31,7 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(health.router)
+    app.include_router(stores.router)
     return app
 
 

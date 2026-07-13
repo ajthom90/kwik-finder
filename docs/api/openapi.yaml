@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: KwikFinder API
+  version: "1.0.0"
+  description: |
+    Read-only store catalog API. Clients poll `/v1/meta` and download the full
+    catalog from `/v1/stores` when `dataVersion` changes. No write endpoints
+    and no API keys for v1.
+servers:
+  - url: http://localhost:8080
+    description: Local / Docker Compose default
+paths:
+  /v1/health:
+    get:
+      tags: [health]
+      summary: Process health and last job timestamps
+      operationId: getHealth
+      responses:
+        "200":
+          description: Health snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /v1/meta:
+    get:
+      tags: [stores]
+      summary: Catalog version and refresh timestamps
+      description: |
+        Lightweight probe so clients can skip re-downloading `/v1/stores` when
+        `dataVersion` matches the local cache.
+      operationId: getMeta
+      responses:
+        "200":
+          description: Catalog meta
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogMeta"
+
+  /v1/stores:
+    get:
+      tags: [stores]
+      summary: Full normalized store catalog
+      operationId: listStores
+      responses:
+        "200":
+          description: Meta plus all stores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoresResponse"
+
+  /v1/stores/{id}:
+    get:
+      tags: [stores]
+      summary: Single store by id
+      operationId: getStore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Store id (Kwik Trip store number)
+      responses:
+        "200":
+          description: Store object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Store"
+        "404":
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - listRefreshedAt
+        - detailsRefreshedAt
+        - pdfEnrichedAt
+        - lastError
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, starting]
+        listRefreshedAt:
+          type: string
+          format: date-time
+          nullable: true
+        detailsRefreshedAt:
+          type: string
+          format: date-time
+          nullable: true
+        pdfEnrichedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastError:
+          type: string
+          nullable: true
+
+    CatalogMeta:
+      type: object
+      required:
+        - dataVersion
+        - storeCount
+        - listRefreshedAt
+        - detailsRefreshedAt
+        - pdfEnrichedAt
+      properties:
+        dataVersion:
+          type: string
+          format: date-time
+          nullable: true
+          description: ISO-8601 timestamp of last successful material catalog change
+        storeCount:
+          type: integer
+          minimum: 0
+        listRefreshedAt:
+          type: string
+          format: date-time
+          nullable: true
+        detailsRefreshedAt:
+          type: string
+          format: date-time
+          nullable: true
+        pdfEnrichedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    StoresResponse:
+      type: object
+      required:
+        - meta
+        - stores
+      properties:
+        meta:
+          $ref: "#/components/schemas/CatalogMeta"
+        stores:
+          type: array
+          items:
+            $ref: "#/components/schemas/Store"
+
+    Store:
+      type: object
+      required:
+        - id
+        - name
+        - latitude
+        - longitude
+        - address1
+        - city
+        - county
+        - state
+        - zip
+        - phone
+        - open24Hours
+        - hours
+        - fuels
+        - amenities
+        - truckParkingSpaces
+        - familyRestroom
+        - evCharging
+        - features
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "KWIK TRIP #123"
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        address1:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        county:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+        zip:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        open24Hours:
+          type: boolean
+        hours:
+          type: array
+          items:
+            $ref: "#/components/schemas/StoreHours"
+        fuels:
+          type: array
+          items:
+            $ref: "#/components/schemas/FuelOffering"
+        amenities:
+          type: array
+          items:
+            type: string
+        truckParkingSpaces:
+          type: integer
+          minimum: 0
+        familyRestroom:
+          type: boolean
+        evCharging:
+          type: string
+          nullable: true
+          enum: [open, comingSoon]
+          description: null | open | comingSoon (from Maps & Downloads EV PDF)
+        features:
+          $ref: "#/components/schemas/StoreFeatures"
+
+    StoreHours:
+      type: object
+      required:
+        - dayOfWeek
+        - openTime
+        - closeTime
+      properties:
+        dayOfWeek:
+          type: string
+          example: Monday
+        openTime:
+          type: string
+          example: "00:00:00"
+        closeTime:
+          type: string
+          example: "00:00:00"
+
+    FuelOffering:
+      type: object
+      required:
+        - type
+        - description
+        - price
+      properties:
+        type:
+          type: string
+          example: "DIESEL #2"
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+          nullable: true
+
+    StoreFeatures:
+      type: object
+      description: |
+        Server-owned filter flags derived from fuels, amenities, and related
+        fields. Clients filter on these instead of re-mapping Kwik Trip strings.
+      properties:
+        diesel:
+          type: boolean
+        premiumDiesel:
+          type: boolean
+        def:
+          type: boolean
+        e85:
+          type: boolean
+        cng:
+          type: boolean
+        noEthanolGas:
+          type: boolean
+        unleaded88:
+          type: boolean
+        scale:
+          type: boolean
+        showers:
+          type: boolean
+        truckParking:
+          type: boolean
+        truckParkingStalls:
+          type: integer
+          minimum: 0
+        transFlo:
+          type: boolean
+        fleetCards:
+          type: boolean
+        truckFriendly:
+          type: boolean
+        carWash:
+          type: boolean
+        atm:
+          type: boolean
+        bitcoinATM:
+          type: boolean
+        wifi:
+          type: boolean
+        restaurant:
+          type: boolean
+      additionalProperties: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Store not found
