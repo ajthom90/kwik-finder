@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "dataVersion": "2026-07-13T12:00:00+00:00",
+    "storeCount": 2,
+    "listRefreshedAt": "2026-07-13T12:00:00+00:00",
+    "detailsRefreshedAt": "2026-07-13T12:05:00+00:00",
+    "pdfEnrichedAt": "2026-07-13T06:00:00+00:00"
+  },
+  "stores": [
+    {
+      "id": 123,
+      "name": "KWIK TRIP #123",
+      "latitude": 44.9,
+      "longitude": -93.2,
+      "address1": "1 Main St",
+      "city": "La Crosse",
+      "county": null,
+      "state": "WI",
+      "zip": "54601",
+      "phone": "608-555-0100",
+      "open24Hours": true,
+      "hours": [
+        {
+          "dayOfWeek": "Monday",
+          "openTime": "00:00:00",
+          "closeTime": "00:00:00"
+        }
+      ],
+      "fuels": [
+        {
+          "type": "DIESEL #2",
+          "description": null,
+          "price": 3.299
+        },
+        {
+          "type": "PREMIUM DIESEL",
+          "description": "B11 #2 PREMIUM ULSD",
+          "price": 3.499
+        }
+      ],
+      "amenities": ["ATM", "WI-FI", "TRUCK-PARKING"],
+      "truckParkingSpaces": 12,
+      "familyRestroom": true,
+      "evCharging": "open",
+      "features": {
+        "diesel": true,
+        "premiumDiesel": true,
+        "def": false,
+        "atm": true,
+        "wifi": true,
+        "truckParking": true,
+        "truckParkingStalls": 12,
+        "showers": false,
+        "scale": false
+      }
+    },
+    {
+      "id": 456,
+      "name": "KWIK STAR #456",
+      "latitude": 42.5,
+      "longitude": -93.2,
+      "address1": "701 S OAK ST",
+      "city": "IOWA FALLS",
+      "county": "HARDIN",
+      "state": "IA",
+      "zip": "50126",
+      "phone": "(641) 648-6707",
+      "open24Hours": false,
+      "hours": [],
+      "fuels": [
+        {
+          "type": "UNLEADED 87 (10% ETH)",
+          "description": "UNL OXY 87-10E",
+          "price": 3.899
+        }
+      ],
+      "amenities": ["ATM", "CAR-WASH"],
+      "truckParkingSpaces": 0,
+      "familyRestroom": false,
+      "evCharging": null,
+      "features": {
+        "diesel": false,
+        "atm": true,
+        "wifi": false,
+        "carWash": true,
+        "truckParking": false
+      }
+    }
+  ]
+}
