@@ -29,8 +29,14 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     func requestPermission() {
-        if manager.authorizationStatus == .notDetermined {
+        authorization = manager.authorizationStatus
+        if authorization == .notDetermined {
             manager.requestWhenInUseAuthorization()
+            return
+        }
+        // Already decided earlier (common on relaunch) — start updates immediately.
+        if isAuthorized {
+            manager.startUpdatingLocation()
         }
     }
 
@@ -38,6 +44,8 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         authorization = manager.authorizationStatus
         if isAuthorized {
             manager.startUpdatingLocation()
+        } else {
+            manager.stopUpdatingLocation()
         }
     }
 

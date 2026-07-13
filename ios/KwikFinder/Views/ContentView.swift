@@ -17,21 +17,29 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var sortOrder: StoreSortOrder = .nearest
 
-    @State private var camera: MapCameraPosition = .automatic
+    @State private var camera: MapCameraPosition = .region(
+        MKCoordinateRegion(
+            center: LocationService.fallbackLocation.coordinate,
+            latitudinalMeters: 40_000,
+            longitudinalMeters: 40_000
+        )
+    )
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var mapSelection: Int?
     @State private var navPath: [Route] = []
     @State private var sheetPresented = true
     @State private var sheetDetent: PresentationDetent = Self.midDetent
     @State private var hasCenteredOnUser = false
+    /// Wait for the first camera settle before drawing markers so MapKit can
+    /// fetch basemap tiles without competing with hundreds of annotations.
+    @State private var showMarkers = false
 
     private static let midDetent = PresentationDetent.fraction(0.45)
     private static let compactDetent = PresentationDetent.height(96)
 
-    /// Cap on simultaneously rendered markers to keep the map responsive when
-    /// the unfiltered set is huge. When filters/search shrink the set under
-    /// this cap, every matching store is shown.
-    private static let markerLimit = 350
+    /// Cap on simultaneously rendered markers to keep the basemap responsive.
+    /// Large Marker counts can starve MapKit tile rendering on first paint.
+    private static let markerLimit = 120
 
     private var filteredStores: [Store] {
         let reference = locationService.effectiveLocation
@@ -70,10 +78,12 @@ struct ContentView: View {
     var body: some View {
         Map(position: $camera, selection: $mapSelection) {
             UserAnnotation()
-            ForEach(mapStores) { store in
-                Marker(store.brandedName, systemImage: markerSymbol(for: store), coordinate: store.coordinate)
-                    .tint(markerTint(for: store))
-                    .tag(store.id)
+            if showMarkers {
+                ForEach(mapStores) { store in
+                    Marker(store.brandedName, systemImage: markerSymbol(for: store), coordinate: store.coordinate)
+                        .tint(markerTint(for: store))
+                        .tag(store.id)
+                }
             }
         }
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
@@ -83,6 +93,9 @@ struct ContentView: View {
         }
         .onMapCameraChange(frequency: .onEnd) { context in
             visibleRegion = context.region
+            if !showMarkers {
+                showMarkers = true
+            }
         }
         .sheet(isPresented: $sheetPresented) {
             sheetContent
