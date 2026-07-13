@@ -1,0 +1,86 @@
+{
+  "storeNumber": 103,
+  "name": "KWIK STAR #103",
+  "phone": "(641) 648-6707",
+  "open24Hours": true,
+  "hours": null,
+  "address": {
+    "address1": "701 S OAK ST",
+    "address2": null,
+    "city": "IOWA FALLS",
+    "county": "HARDIN",
+    "state": "IA",
+    "zip": "50126",
+    "latitude": 42.50639,
+    "longitude": -93.2633
+  },
+  "fuel": [
+    {
+      "type": "UNLEADED 87 (10% ETH)",
+      "description": "UNL OXY 87-10E",
+      "currentPrice": 3.899
+    },
+    {
+      "type": "UNLEADED 88",
+      "description": "UNL OXY 88-15E",
+      "currentPrice": 3.799
+    },
+    {
+      "type": "DIESEL #2",
+      "description": "B11 #2 ULSD",
+      "currentPrice": 4.489
+    },
+    {
+      "type": "PREMIUM DIESEL",
+      "description": "B11 #2 PREMIUM ULSD",
+      "currentPrice": 4.639
+    },
+    {
+      "type": "DIESEL EXHAUST FLUID",
+      "description": "DIESEL EXHAUST FLUID",
+      "currentPrice": 4.789
+    },
+    {
+      "type": null,
+      "description": "ignored no type",
+      "currentPrice": 1.0
+    }
+  ],
+  "properties": [
+    {
+      "name": "ATM",
+      "hasProperty": true,
+      "quantity": null
+    },
+    {
+      "name": "TRENDAR",
+      "hasProperty": true,
+      "quantity": null
+    },
+    {
+      "name": "TRUCK-FRIENDLY",
+      "hasProperty": true,
+      "quantity": null
+    },
+    {
+      "name": "TRUCK-PARKING",
+      "hasProperty": true,
+      "quantity": 8
+    },
+    {
+      "name": "WI-FI",
+      "hasProperty": true,
+      "quantity": null
+    },
+    {
+      "name": "SHOWERS",
+      "hasProperty": false,
+      "quantity": null
+    },
+    {
+      "name": null,
+      "hasProperty": true,
+      "quantity": null
+    }
+  ]
+}
