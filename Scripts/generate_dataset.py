@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-"""Generate the bundled store snapshot for KwikFinder.
+"""DEPRECATED — legacy offline snapshot generator for the pre-server iOS app.
 
-Merges three sources published by Kwik Trip:
-  1. Store locator API (kwiktrip.com/storelistproxy.php) — all stores with coordinates.
-  2. Store details API (kwiktrip.com/storeinformationsproxy.php) — per-store fuel
-     types/prices, amenities (scale, DEF, showers, truck parking, ...), and hours.
-  3. Maps & Downloads PDFs (kwiktrip.com/maps-downloads) — the only published
-     sources for family restrooms and KwikCharge EV charging locations.
+**Do not use for new workflows.** The KwikFinder server owns all store data
+ingest. List/details/PDF logic lives in ``server/app/ingest/``; run the API via
+Docker Compose or ``uvicorn`` instead of this script.
 
-Output: KwikFinder/Resources/stores_snapshot.json (ships inside the app bundle;
-the app refreshes store details live at runtime and uses this as its offline
-baseline and as the sole source for family-restroom / EV flags).
+This file is kept only for historical reference and emergency offline snapshot
+generation. The default output path
+(``KwikFinder/Resources/stores_snapshot.json``) no longer exists in the monorepo
+layout (clients use the server API + disk cache).
 
-Usage:
+Originally merged three sources published by Kwik Trip:
+  1. Store locator API (kwiktrip.com/storelistproxy.php)
+  2. Store details API (kwiktrip.com/storeinformationsproxy.php)
+  3. Maps & Downloads PDFs (family restrooms + KwikCharge EV)
+
+Usage (legacy):
   python3 Scripts/generate_dataset.py            # writes the snapshot
   python3 Scripts/generate_dataset.py --check    # parse PDFs only, print stats
 
-Requires: requests-free stdlib networking (urllib) + pypdf for PDF parsing.
+Requires: stdlib networking (urllib) + pypdf for PDF parsing.
 """
 
 import io
@@ -40,9 +43,10 @@ EV_CHARGING_LINK = re.compile(r'href="([^"]*kwikcharge[^"]*\.pdf)"', re.I)
 
 STATE_CODES = r"(?:WI|MN|IA|IL|MI|SD)"
 BATCH_SIZE = 10  # the details endpoint rejects requests with more than 10 ids
+# Legacy path from the pre-monorepo layout; directory may not exist.
 OUTPUT = Path(__file__).resolve().parent.parent / "KwikFinder" / "Resources" / "stores_snapshot.json"
 
-UA = {"User-Agent": "KwikFinder dataset generator (personal project)"}
+UA = {"User-Agent": "KwikFinder dataset generator (personal project, DEPRECATED)"}
 
 
 def fetch(url: str, retries: int = 3) -> bytes:
@@ -221,4 +225,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    print(
+        "WARNING: Scripts/generate_dataset.py is DEPRECATED.\n"
+        "  Prefer the KwikFinder server (docker compose up) — ingest lives in\n"
+        "  server/app/ingest/. Output path is the old monorepo layout and may\n"
+        "  not match ios/ or android/ clients.\n",
+        file=sys.stderr,
+    )
     main()

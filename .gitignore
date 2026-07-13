@@ -23,19 +23,38 @@ build/
 __pycache__/
 *.pyc
 .venv/
+**/.venv/
 .pytest_cache/
+server/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 
 # macOS
 .DS_Store
 
 # Android
 android/.gradle/
+android/.kotlin/
 android/**/build/
 android/local.properties
 android/*.iml
 android/.idea/
 android/captures/
 android/.cxx/
+*.iml
 *.apk
 *.ap_
 *.aab
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.*
+!.env.example

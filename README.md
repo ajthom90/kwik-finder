@@ -4,109 +4,171 @@ Monorepo for finding the nearest **Kwik Trip / Kwik Star** store with the
 features you need — family restrooms, specific fuel types, truck stop services
 (scale, DEF, showers, truck parking), and KwikCharge EV charging.
 
+**Not affiliated with or endorsed by Kwik Trip, Inc.** All store data is derived
+from Kwik Trip's public website. Fuel prices are informational; the price at the
+pump governs.
+
 | Path | Contents |
 | --- | --- |
-| [`ios/`](ios/) | SwiftUI iPhone app (XcodeGen) |
-| [`server/`](server/) | Caching API server (FastAPI) — sole Kwik Trip consumer |
-| [`docs/`](docs/) | OpenAPI and design docs |
+| [`server/`](server/) | FastAPI caching API — **sole** Kwik Trip consumer |
+| [`ios/`](ios/) | SwiftUI iPhone client (MapKit + disk cache) |
+| [`android/`](android/) | Jetpack Compose client (osmdroid + disk cache) |
+| [`docs/api/openapi.yaml`](docs/api/openapi.yaml) | HTTP API contract |
+| [`docker-compose.yml`](docker-compose.yml) | Local / TrueNAS-friendly deploy |
+| [`Scripts/`](Scripts/) | **Deprecated** legacy snapshot generator (see below) |
 
-Not affiliated with or endorsed by Kwik Trip, Inc. All store data comes from
-Kwik Trip's own public website.
+## Architecture
 
-## Features
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  iOS app    │  │ Android app │  │ Future web  │
+│  (MapKit)   │  │ (OSM)       │  │             │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │
+       │         GET /v1/*               │
+       └────────────────┼────────────────┘
+                        ▼
+              ┌───────────────────┐
+              │  KwikFinder API   │
+              │  FastAPI + SQLite │
+              │  + scheduler      │
+              └─────────┬─────────┘
+                        │ (only this process talks upstream)
+                        ▼
+              ┌───────────────────┐
+              │  Kwik Trip site   │
+              │  list/details JSON│
+              │  + Maps PDFs      │
+              └───────────────────┘
+```
 
-- **Map + nearest-first list** of all 900+ Kwik Trip / Kwik Star stores,
-  sorted by distance from your location (Apple Maps–style draggable sheet).
-- **Favorites**: star stores from the list or detail screen; favorites persist
-  across launches (UserDefaults). Sort the list **Nearest** or **Favorites first**.
-- **Filters** (a store must have *every* selected feature):
+- **Server** schedules list/details/PDF ingest, normalizes features, and serves a
+  full-catalog dump (`GET /v1/stores`) plus meta/health.
+- **Clients** never call Kwik Trip. They poll the server, filter/sort locally,
+  and keep a disk cache of the last successful catalog for offline use.
+- **No auth** on the public read API for v1 (data is already public on Kwik Trip's
+  site). Prefer LAN / reverse-proxy access if you expose it beyond home lab.
+
+## Features (clients)
+
+- **Map + nearest-first list** of all ~900+ Kwik Trip / Kwik Star stores.
+- **Favorites**: star stores from list or detail; sort **Nearest** or **Favorites first**.
+- **Filters** (AND semantics — a store must have *every* selected feature):
   - *Popular:* Family Restroom, EV Charging, Open 24 Hours
   - *Fuel types:* Diesel, Premium Diesel, DEF at the pump, E-85, CNG,
     No-Ethanol Gas, Unleaded 88
   - *Professional driver services:* CAT Scale, Showers, Truck Parking,
     TransFlo, Fleet Cards, Truck Friendly
   - *Amenities:* Car Wash, ATM, Bitcoin ATM, Wi-Fi, Restaurant
-- **Search** the list by store name, city, address, or store number.
-- **Store detail** screen with live fuel prices (including DEF), hours,
-  amenities (including Bitcoin ATM when present), truck-parking stall counts,
-  one-tap directions (Apple Maps) and calling.
-- **EV charging status**: sites from Kwik Trip's KwikCharge list are badged
-  green when open and orange when "Coming Soon".
-- Works offline from a bundled data snapshot; refreshes live data when online,
-  again when the app becomes active, and on pull-to-refresh (throttled so the
-  locator endpoints are not hammered). Status banners emphasize snapshot /
-  refreshing / offline; a brief “live updated” confirmation hides after a few
-  seconds when everything is healthy.
+- **Search** by store name, city, address, or store number.
+- **Store detail** with fuel prices, hours, amenities, directions, and call.
+- **EV charging status**: KwikCharge sites badged open vs coming soon.
+- **Offline**: last successful catalog on disk; status banners for offline /
+  refreshing / degraded server data.
+
+Map markers are capped at the **nearest 120** matches for pan performance; the
+list always shows the full filtered set.
 
 ## Where the data comes from
 
-Everything is derived from Kwik Trip's website, per their
-[Maps and Downloads](https://www.kwiktrip.com/maps-downloads) page and the
-JSON endpoints behind their public [store locator](https://www.kwiktrip.com/locator):
+**Only the server** talks to Kwik Trip. Clients use the KwikFinder API
+([OpenAPI](docs/api/openapi.yaml)).
 
-| Data | Source | How it's used |
+| Data | Upstream source | Server usage |
 | --- | --- | --- |
-| Store list (id, name, coordinates, phone) | `kwiktrip.com/storelistproxy.php` | Bundled snapshot + refreshed live at launch |
-| Fuel types & live prices, amenities, hours, truck services | `kwiktrip.com/storeinformationsproxy.php?ids=…` (max 10 ids per request) | Bundled snapshot + refreshed live per store on demand |
-| **Family restrooms** | "Family Restroom Store List" PDF on Maps & Downloads | Parsed at snapshot-generation time (not available via the API) |
-| **EV charging (KwikCharge)** | "EV Charging Locations" PDF on Maps & Downloads | Parsed at snapshot-generation time, including Open / Coming Soon status |
+| Store list (id, name, coordinates, phone) | `kwiktrip.com/storelistproxy.php` | Scheduled list ingest |
+| Fuel types & prices, amenities, hours, truck services | `kwiktrip.com/storeinformationsproxy.php?ids=…` (≤10 ids/request) | Batched details ingest |
+| **Family restrooms** | "Family Restroom Store List" PDF on [Maps & Downloads](https://www.kwiktrip.com/maps-downloads) | Daily PDF enrich |
+| **EV charging (KwikCharge)** | "EV Charging Locations" PDF on Maps & Downloads | Daily PDF enrich |
 
-The app ships with `ios/KwikFinder/Resources/stores_snapshot.json`, generated by
-`Scripts/generate_dataset.py`. At runtime the app:
+Kwik Trip's locator endpoints are undocumented public site APIs and could change;
+the server keeps last-good SQLite rows and reports degraded health on failures.
 
-1. Loads the snapshot instantly (fully offline-capable).
-2. Fetches the live store list to pick up newly opened stores.
-3. Refreshes live details — fuel prices, hours, amenities — for the ten
-   nearest stores and for any store you open, preserving the PDF-sourced
-   family-restroom and EV flags.
-4. Re-runs the list + nearest-details refresh when the app returns to the
-   foreground (minimum 5 minutes between list fetches and 3 minutes between
-   nearest-detail batches unless the user force-refreshes).
+### Legacy snapshot script (deprecated)
 
-### Regenerating the snapshot
+`Scripts/generate_dataset.py` used to write a bundled `stores_snapshot.json` for
+the pre-server iOS app. **Ingest and PDF parsing now live in
+`server/app/ingest/`.** Do not use the script for new workflows.
+
+The script is retained only for historical reference / emergency offline
+snapshot generation. Its default output path
+(`KwikFinder/Resources/stores_snapshot.json`) no longer exists in this monorepo
+layout. Prefer running the server.
+
+## Running the server
+
+### Docker Compose (recommended)
 
 ```bash
-pip install pypdf
-python3 Scripts/generate_dataset.py          # rewrites ios/KwikFinder/Resources/stores_snapshot.json
-python3 Scripts/generate_dataset.py --check  # just parse the PDFs and print stats
+docker compose up --build -d
+curl -sf http://localhost:8080/v1/health | jq .
+curl -sf http://localhost:8080/v1/meta | jq .
 ```
 
-Re-run this occasionally (or before a release) to pick up new stores, new
-family-restroom locations, and new EV chargers. The script discovers the
-current PDF URLs from the Maps & Downloads page automatically.
+- Image builds from [`server/Dockerfile`](server/Dockerfile).
+- SQLite and temp PDF files live under `DATA_DIR` (`/data` in the container),
+  backed by the `kwikfinder-data` named volume.
+- Host port **8080** → container 8080 (change the left side of the mapping in
+  `docker-compose.yml` if 8080 is already in use).
+
+### Configuration (environment)
+
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `DATA_DIR` | SQLite + temp PDF path | `./data` (image: `/data`) |
+| `LIST_REFRESH_SECONDS` | Store list poll interval | `900` |
+| `DETAILS_REFRESH_SECONDS` | Details cycle target | `1200` |
+| `PDF_REFRESH_SECONDS` | PDF re-parse interval | `86400` |
+| `CORS_ORIGINS` | Browser CORS allowlist (`*` or comma-separated) | `*` |
+| `LOG_LEVEL` | Logging level | `INFO` |
+| `HOST` / `PORT` | Bind address (local runs) | `0.0.0.0` / `8080` |
+
+### Local development (without Docker)
+
+```bash
+cd server
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt -r requirements-dev.txt
+PYTHONPATH=. uvicorn app.main:app --host 0.0.0.0 --port 8080
+# tests:
+PYTHONPATH=. pytest -v
+```
+
+### TrueNAS / always-on host notes
+
+1. Deploy with Docker Compose (Apps / custom compose stack) or any Docker host.
+2. Persist the volume (`kwikfinder-data` or a host path bind-mount to `/data`) so
+   the catalog survives container recreation.
+3. Expose port 8080 on your LAN (or reverse-proxy with TLS). No API keys for v1.
+4. Point phone clients at the host LAN IP or DNS name, e.g.
+   `http://192.168.1.50:8080` (cleartext HTTP is fine on trusted LAN; use HTTPS
+   if you terminate TLS at a reverse proxy).
+5. First boot may return an empty catalog until the first list/details/PDF jobs
+   complete — watch `GET /v1/health` and `GET /v1/meta`.
 
 ## Building (iOS)
 
 The Xcode project lives under [`ios/`](ios/) and is generated from
 [`ios/project.yml`](ios/project.yml) with
-[XcodeGen](https://github.com/yonaskolb/XcodeGen). `project.yml` is the source
-of truth; the committed `ios/KwikFinder.xcodeproj` is produced from it so the
-repo opens cleanly without an extra step.
+[XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ### Prerequisites
 
-- **Xcode 16 or newer**
-- **XcodeGen** (only needed if you change `project.yml` or regenerate the project):
+- **Xcode 16+**, iOS 17.0+ (iPhone)
+- **XcodeGen** if you change `project.yml`:
 
 ```bash
 brew install xcodegen
 ```
 
-### Generate & open
+### Generate, open, build
 
 ```bash
 cd ios
-xcodegen generate          # writes/updates KwikFinder.xcodeproj from project.yml
-open KwikFinder.xcodeproj  # or open in Xcode from the Finder
+xcodegen generate
+open KwikFinder.xcodeproj
 ```
-
-### Build & run
-
-1. Open `ios/KwikFinder.xcodeproj` in Xcode (or run `xcodegen generate` from
-   `ios/` first if you edited `project.yml`).
-2. Select your team under *Signing & Capabilities* if you're running on a
-   device.
-3. Build and run on iOS 17.0+ (iPhone only).
 
 Command-line build (Simulator example):
 
@@ -117,50 +179,104 @@ xcodebuild -project KwikFinder.xcodeproj -scheme KwikFinder \
   -configuration Debug build CODE_SIGNING_ALLOWED=NO
 ```
 
-No third-party dependencies — SwiftUI, MapKit, CoreLocation, and the Swift
-Observation framework only. Do not hand-edit `project.pbxproj`; change
-`ios/project.yml` and re-run `xcodegen generate` instead.
+No third-party Swift packages — SwiftUI, MapKit, CoreLocation, Observation only.
+Do not hand-edit `project.pbxproj`; edit `project.yml` and re-run XcodeGen.
 
-## Architecture (iOS)
+### iOS API base URL
+
+Configured via Info.plist key **`KwikFinderAPIBaseURL`**
+([`ios/KwikFinder/Info.plist`](ios/KwikFinder/Info.plist) /
+[`APIConfig.swift`](ios/KwikFinder/Config/APIConfig.swift)):
+
+| Build | Default |
+| --- | --- |
+| Debug | `http://localhost:8080` (Simulator → host Docker) |
+| Physical device | Set `KwikFinderAPIBaseURL` to your LAN host, e.g. `http://192.168.1.50:8080` |
+| Release | Set `KwikFinderAPIBaseURL` explicitly (localhost fallback is a misconfig safeguard) |
+
+Local networking (cleartext to LAN) is allowed via
+`NSAppTransportSecurity` → `NSAllowsLocalNetworking`.
+
+## Building (Android)
+
+Kotlin + Jetpack Compose + **osmdroid** (OpenStreetMap — no Google Maps key).
+
+### Prerequisites
+
+- **JDK 17+**
+- Android SDK (via Android Studio or command-line tools)
+- Emulator or device with API level matching the app `minSdk`
+
+### Build
+
+```bash
+cd android
+./gradlew :app:assembleDebug
+# unit tests:
+./gradlew :app:testDebugUnitTest
+```
+
+Open the `android/` folder in Android Studio for the emulator UI.
+
+`local.properties` (SDK path) is generated by Android Studio and is gitignored.
+
+### Android API base URL
+
+[`APIConfig.kt`](android/app/src/main/java/com/ajthom90/kwikfinder/data/APIConfig.kt):
+
+| Environment | URL |
+| --- | --- |
+| Emulator default | `http://10.0.2.2:8080` (alias for host loopback) |
+| Physical device / TrueNAS | Set `APIConfig.baseUrl` before building the client, e.g. `http://192.168.1.50:8080` |
+
+Debug builds allow cleartext HTTP via the debug network security config so LAN
+and emulator hosts work without TLS.
+
+## HTTP API (summary)
+
+Contract: [`docs/api/openapi.yaml`](docs/api/openapi.yaml)
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/v1/health` | Process up; last success/error for list, details, PDF jobs |
+| `GET` | `/v1/meta` | `dataVersion`, store count, refresh timestamps |
+| `GET` | `/v1/stores` | Full normalized catalog (`meta` + `stores[]`) |
+| `GET` | `/v1/stores/{id}` | Single store |
+
+Clients should probe `/v1/meta` and only re-download `/v1/stores` when
+`dataVersion` changes.
+
+## Repo layout
 
 ```
-ios/
-├── project.yml                  XcodeGen source of truth
-├── KwikFinder.xcodeproj         Generated; do not hand-edit
-└── KwikFinder/
-    ├── KwikFinderApp.swift      App entry point
-    ├── Models/
-    │   ├── Store.swift          Store model + feature matching
-    │   ├── StoreFeature.swift   Filterable features (labels, icons, groups)
-    │   ├── FilterState.swift    Selected-filter state (AND semantics)
-    │   └── FavoritesStore.swift Persisted favorite store IDs + list sort order
-    ├── Services/
-    │   ├── KwikTripAPI.swift    Client for the locator JSON endpoints
-    │   ├── StoreRepository.swift Snapshot + live-data merge
-    │   └── LocationService.swift CoreLocation wrapper
-    ├── Views/
-    │   ├── ContentView.swift    Map + persistent bottom sheet
-    │   ├── StoreListView.swift  Sorted list, favorites, search, status banners
-    │   ├── StoreDetailView.swift Fuel prices, services, hours, favorite, actions
-    │   ├── FilterView.swift     Filter picker with live match count
-    │   └── Formatters.swift     Distance/date formatting helpers
-    └── Resources/
-        └── stores_snapshot.json Generated dataset (see above)
-
-Scripts/generate_dataset.py      Snapshot generator (repo root)
+kwik-finder/
+├── server/                 FastAPI + SQLite + ingest jobs
+│   ├── app/
+│   │   ├── api/            /v1 routes
+│   │   ├── ingest/         Kwik Trip JSON + PDF pipeline
+│   │   ├── jobs.py         scheduled refresh
+│   │   └── ...
+│   ├── tests/
+│   ├── Dockerfile
+│   └── requirements*.txt
+├── ios/                    SwiftUI client
+│   ├── KwikFinder/
+│   ├── project.yml
+│   └── KwikFinder.xcodeproj
+├── android/                Compose + osmdroid client
+├── docs/
+│   ├── api/openapi.yaml
+│   └── superpowers/        design + plans
+├── docker-compose.yml
+├── Scripts/                deprecated snapshot generator
+└── README.md
 ```
 
 ## Notes & known limitations
 
-- The locator endpoints are the ones Kwik Trip's own website uses, but they
-  are not a documented public API and could change; the app degrades to the
-  bundled snapshot if they do.
-- Family-restroom and EV data are only as fresh as the last snapshot, because
-  Kwik Trip publishes them solely as PDFs.
-- When more than ~350 *matching* stores are in view, the map renders the
-  nearest 350 markers to keep panning smooth; filtered/search results under
-  that cap show every match. The list is always complete.
-- Fuel prices are informational; the price at the pump governs (per Kwik
-  Trip's own legal note).
-- Live refresh can fail silently to the bundled snapshot; the list shows an
-  offline banner and detail screens still prefer last-known prices.
+- Clients never contact Kwik Trip; only the server does.
+- Family-restroom and EV flags refresh on the server PDF schedule (default daily).
+- Map markers: nearest **120** for performance; list is complete.
+- Fuel prices are informational; pump price governs.
+- No user accounts, auth, or server-side favorites in v1.
+- Undocumented upstream endpoints may change; server degrades to last-good data.
