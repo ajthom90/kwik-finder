@@ -27,3 +27,15 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Android
+android/.gradle/
+android/**/build/
+android/local.properties
+android/*.iml
+android/.idea/
+android/captures/
+android/.cxx/
+*.apk
+*.ap_
+*.aab
