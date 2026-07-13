@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only network security config (src/debug overrides main).
+
+  On API 24+, networkSecurityConfig base-config cleartextTrafficPermitted=false
+  overrides android:usesCleartextTraffic. Allow cleartext for arbitrary LAN IPs
+  during development by permitting cleartext at the base-config level.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

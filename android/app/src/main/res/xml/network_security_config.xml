@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Cleartext policy notes:
-  - Debug builds set android:usesCleartextTraffic=true (see app/build.gradle.kts)
-    so arbitrary LAN HTTP hosts work during development.
-  - This config additionally permits cleartext for local/emulator hosts in all builds.
+  Release / main cleartext policy (strict):
+  - base-config cleartextTrafficPermitted=false (default deny)
+  - cleartext only for localhost / emulator host loopback
+  Debug builds replace this file via src/debug/res/xml/network_security_config.xml
+  (base-config cleartextTrafficPermitted=true) because on API 24+ the network
+  security config overrides android:usesCleartextTraffic for cleartext decisions.
   Android domain-config does not support CIDR ranges; name exact hosts as needed.
 -->
 <network-security-config>
@@ -15,3 +17,4 @@
         <domain includeSubdomains="false">10.0.2.2</domain>
     </domain-config>
 </network-security-config>
+
