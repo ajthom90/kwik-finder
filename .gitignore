@@ -19,9 +19,11 @@ build/
 .build/
 .swiftpm/
 
-# Python (dataset generator)
+# Python (dataset generator + server)
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
 
 # macOS
 .DS_Store

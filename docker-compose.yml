@@ -1,0 +1,14 @@
+services:
+  api:
+    build: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      DATA_DIR: /data
+      CORS_ORIGINS: "*"
+    volumes:
+      - kwikfinder-data:/data
+    restart: unless-stopped
+
+volumes:
+  kwikfinder-data:
