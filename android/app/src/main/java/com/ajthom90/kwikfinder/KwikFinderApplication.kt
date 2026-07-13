@@ -4,6 +4,9 @@ import android.app.Application
 import org.osmdroid.config.Configuration
 
 class KwikFinderApplication : Application() {
+    lateinit var container: AppContainer
+        private set
+
     override fun onCreate() {
         super.onCreate()
         // Required by osmdroid before any MapView is created.
@@ -12,5 +15,6 @@ class KwikFinderApplication : Application() {
             this,
             getSharedPreferences("osmdroid", MODE_PRIVATE),
         )
+        container = AppContainer(this)
     }
 }

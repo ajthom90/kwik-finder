@@ -136,8 +136,40 @@ class StoreRepository(
         )
     }
 
+    /**
+     * When fuel prices in the catalog were last confirmed (for detail footer).
+     * [id] is unused — catalog is all-or-nothing; kept for iOS parity.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    fun pricesAsOfEpochMs(id: Int): Long? {
+        lastSuccessfulRefreshEpochMs?.let { return it }
+        _catalogMeta.value?.detailsRefreshedAt?.let { iso ->
+            parseIso8601ToEpochMs(iso)?.let { return it }
+        }
+        return cache.lastModifiedEpochMs()
+    }
+
+    /** True after a successful network refresh this session (or when status is live). */
+    @Suppress("UNUSED_PARAMETER")
+    fun isLive(id: Int): Boolean {
+        if (_status.value is LiveDataStatus.Live) return true
+        return lastSuccessfulRefreshEpochMs != null
+    }
+
     companion object {
         /** Mild debounce so launch + foreground don't stampede meta. */
         const val META_MIN_INTERVAL_MS: Long = 30_000L
+
+        private fun parseIso8601ToEpochMs(value: String): Long? {
+            return try {
+                java.time.Instant.parse(value).toEpochMilli()
+            } catch (_: Exception) {
+                try {
+                    java.time.OffsetDateTime.parse(value).toInstant().toEpochMilli()
+                } catch (_: Exception) {
+                    null
+                }
+            }
+        }
     }
 }
