@@ -1,0 +1,8 @@
+KwikCharge Locations
+StoreNumber Address City State Status
+101 123 Main St La Crosse WI Open
+202 456 Oak Ave Eau Claire MN Coming Soon
+303 Bad line without status
+404 789 First Ave Madison WI Open
+55 10 State St Dubuque IA Coming Soon
+9001 1 Lake Rd Duluth MN Open
