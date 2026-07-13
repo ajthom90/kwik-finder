@@ -16,9 +16,12 @@
 		4B9A8B2417D47334F2AA3ECC /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD76445A81C6C4C91887319 /* FavoritesStore.swift */; };
 		5C7D378A89A82AFABEDE0517 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB7995F491AC70B53BAC46F /* LocationService.swift */; };
 		66118D3FDFE7BC1974F182D2 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194B32EC3DD3BED3F2FA2A62 /* Formatters.swift */; };
+		6FF0AFDD75423280B7E1EF97 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD0A2FCA96749098A89E3B58 /* APIConfig.swift */; };
 		7A89514D922AFE821B72E65F /* KwikFinderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */; };
 		8C200999ECA9CCE2A3245F38 /* StoreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218FBE8F49DEE3F80CC85525 /* StoreDetailView.swift */; };
+		91C2D146E83D6FA9460A43C5 /* KwikFinderAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AF0A985D478E23E4E41234B /* KwikFinderAPI.swift */; };
 		9B7B031F6D2F403C1B97CD2A /* StoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0CF7F50B40370FB1818C76 /* StoreFeature.swift */; };
+		9B9EE6275B418081E0376294 /* StoreFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD0B7FED39548978FE70293 /* StoreFeatures.swift */; };
 		CC19F71D6C1153C58B3BA4ED /* StoreListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A200E59E1DAD693A897B5E0 /* StoreListView.swift */; };
 		CD3E683E9085C2727ED38822 /* KwikTripAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16DEB5759B22BF2C0F72D72B /* KwikTripAPI.swift */; };
 		F9F267265AFE34FC8F0DB19B /* StoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */; };
@@ -33,12 +36,16 @@
 		3ECFAF5CA018BA05D97EEB0B /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		3FB7995F491AC70B53BAC46F /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		68BEFAB9D0DD5E4EE531FC6D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6AF0A985D478E23E4E41234B /* KwikFinderAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KwikFinderAPI.swift; sourceTree = "<group>"; };
 		6CD76445A81C6C4C91887319 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
 		715D863D90D739E2CCB98C6D /* FilterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterState.swift; sourceTree = "<group>"; };
 		84954E19585A94543B780A01 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		9D19DA507B1288628EA43A82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B75956CEAF585D64097B2041 /* KwikFinder.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KwikFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B90A1AEB4274235ABF373993 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BD0A2FCA96749098A89E3B58 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
 		CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRepository.swift; sourceTree = "<group>"; };
+		DCD0B7FED39548978FE70293 /* StoreFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreFeatures.swift; sourceTree = "<group>"; };
 		F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KwikFinderApp.swift; sourceTree = "<group>"; };
 		FC378330C587E64BEAD76FA5 /* stores_snapshot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stores_snapshot.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -47,6 +54,7 @@
 		9B859A00CB5965FEBF751C3B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				6AF0A985D478E23E4E41234B /* KwikFinderAPI.swift */,
 				16DEB5759B22BF2C0F72D72B /* KwikTripAPI.swift */,
 				3FB7995F491AC70B53BAC46F /* LocationService.swift */,
 				CD8CBE5D6D31EF87CF74E9AA /* StoreRepository.swift */,
@@ -82,6 +90,14 @@
 			);
 			sourceTree = "<group>";
 		};
+		BFCB287EAD0F99F86F81BDA0 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				BD0A2FCA96749098A89E3B58 /* APIConfig.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		C7410F3AA6E2D128DFDC63A6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +105,7 @@
 				715D863D90D739E2CCB98C6D /* FilterState.swift */,
 				84954E19585A94543B780A01 /* Store.swift */,
 				0F0CF7F50B40370FB1818C76 /* StoreFeature.swift */,
+				DCD0B7FED39548978FE70293 /* StoreFeatures.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -104,11 +121,13 @@
 		D909651AFD841DB27685FD2A /* KwikFinder */ = {
 			isa = PBXGroup;
 			children = (
+				BFCB287EAD0F99F86F81BDA0 /* Config */,
 				C7410F3AA6E2D128DFDC63A6 /* Models */,
 				D6B7E5F9E4DF5F1F168B0732 /* Resources */,
 				9B859A00CB5965FEBF751C3B /* Services */,
 				A1E9BFE5B3B1E1EB1AC9B690 /* Views */,
 				B90A1AEB4274235ABF373993 /* Assets.xcassets */,
+				9D19DA507B1288628EA43A82 /* Info.plist */,
 				F08439B3A1AB95376FAC98F6 /* KwikFinderApp.swift */,
 			);
 			path = KwikFinder;
@@ -185,17 +204,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FF0AFDD75423280B7E1EF97 /* APIConfig.swift in Sources */,
 				3E82DCB06C51A3A27C8143AF /* ContentView.swift in Sources */,
 				4B9A8B2417D47334F2AA3ECC /* FavoritesStore.swift in Sources */,
 				3930FF4987ED3AA1E7BDC46F /* FilterState.swift in Sources */,
 				0190F7BBEB56E4AB5B32C5F0 /* FilterView.swift in Sources */,
 				66118D3FDFE7BC1974F182D2 /* Formatters.swift in Sources */,
+				91C2D146E83D6FA9460A43C5 /* KwikFinderAPI.swift in Sources */,
 				7A89514D922AFE821B72E65F /* KwikFinderApp.swift in Sources */,
 				CD3E683E9085C2727ED38822 /* KwikTripAPI.swift in Sources */,
 				5C7D378A89A82AFABEDE0517 /* LocationService.swift in Sources */,
 				31A60137ADEE2909921773E7 /* Store.swift in Sources */,
 				8C200999ECA9CCE2A3245F38 /* StoreDetailView.swift in Sources */,
 				9B7B031F6D2F403C1B97CD2A /* StoreFeature.swift in Sources */,
+				9B9EE6275B418081E0376294 /* StoreFeatures.swift in Sources */,
 				CC19F71D6C1153C58B3BA4ED /* StoreListView.swift in Sources */,
 				F9F267265AFE34FC8F0DB19B /* StoreRepository.swift in Sources */,
 			);
@@ -280,6 +302,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KwikFinder/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to find and sort the nearest Kwik Trip stores.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -370,6 +393,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KwikFinder/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to find and sort the nearest Kwik Trip stores.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

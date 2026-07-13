@@ -103,7 +103,8 @@ final class StoreRepository {
                     amenities: [],
                     truckParkingSpaces: 0,
                     familyRestroom: false,
-                    evCharging: nil
+                    evCharging: nil,
+                    features: nil
                 )
             }
             markLiveSuccess()

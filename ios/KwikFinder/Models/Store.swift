@@ -78,8 +78,8 @@ struct StoreHours: Codable, Hashable, Identifiable {
     }
 }
 
-/// One Kwik Trip / Kwik Star store, decoded from the bundled snapshot and
-/// updated in place from the live locator API.
+/// One Kwik Trip / Kwik Star store, decoded from the bundled snapshot and/or
+/// the KwikFinder catalog server (`GET /v1/stores`).
 struct Store: Codable, Identifiable, Hashable {
     let id: Int
     var name: String
@@ -98,6 +98,9 @@ struct Store: Codable, Identifiable, Hashable {
     var truckParkingSpaces: Int
     var familyRestroom: Bool
     var evCharging: EVChargingStatus?
+    /// Server-computed filter flags. Nil on bundled snapshot / legacy rows;
+    /// present on catalog API payloads.
+    var features: StoreFeatureFlags?
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -126,7 +129,30 @@ struct Store: Codable, Identifiable, Hashable {
         location.distance(from: other)
     }
 
+    /// Prefer server `features` flags when present; otherwise map fuels/amenities
+    /// (bundled snapshot and pre-server live merges). Headlines always use
+    /// top-level store fields (`familyRestroom`, `evCharging`, `open24Hours`).
     func has(_ feature: StoreFeature) -> Bool {
+        switch feature {
+        case .familyRestroom:
+            return familyRestroom
+        case .evCharging:
+            return evCharging != nil
+        case .open24Hours:
+            return open24Hours
+        default:
+            break
+        }
+
+        if let features, let flag = features.flag(for: feature) {
+            return flag
+        }
+
+        return legacyHas(feature)
+    }
+
+    /// Pre-server mapping of raw Kwik Trip fuel/amenity strings.
+    private func legacyHas(_ feature: StoreFeature) -> Bool {
         switch feature {
         case .familyRestroom:
             familyRestroom

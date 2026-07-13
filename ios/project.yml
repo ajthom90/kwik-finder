@@ -77,6 +77,15 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: KwikFinder
+    # Partial Info.plist merged with GENERATE_INFOPLIST_FILE keys below.
+    # NSAllowsLocalNetworking permits HTTP to localhost / LAN (e.g. Docker,
+    # TrueNAS) without disabling ATS entirely via NSAllowsArbitraryLoads.
+    info:
+      path: KwikFinder/Info.plist
+      properties:
+        KwikFinderAPIBaseURL: "http://localhost:8080"
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ajthom90.KwikFinder
